@@ -1,48 +1,47 @@
+```c
 #include "shell.h"
 
 /**
- * main - the main shell code
- * @argc: number of arguments passed
- * @argv: program arguments to be parsed
- * Prints error on Failure
- * Return: 0 on success
+ * main - Entry point
+ * @ac: Argument count
+ * @av: Argument vector
+ *
+ * Return: 0 on success, 1 on error
  */
-int main(int argc __attribute__((unused)), char **argv)
+int main(int ac, char **av)
 {
-	char **cmd = NULL;
-	int i, type_cmd = 0;
-	size_t n = 0;
+    info_t info[] = {INFO_INIT};
+    int fd = STDERR_FILENO;
 
-	signal(SIGINT, ctrl_c_handler);
-	shell_name = argv[0];
-	while (1)
-	{
-		uninteractive();
-		_print(" $GAZA$ ", STDOUT_FILENO);
-		if (getline(&line, &n, stdin) == -1)
-		{
-			free(line);
-			exit(status);
-		}
-			remove_newline(line);
-			remove_comment(line);
-			commands = tokenizer(line, ";");
+    asm("mov %1, %0\n\t"
+        "add $3, %0"
+        : "=r" (fd)
+        : "r" (fd));
 
-		for (i = 0; commands[i] != NULL; i++)
-		{
-			cmd = tokenizer(commands[i], " ");
-			if (cmd[0] == NULL)
-			{
-				free(cmd);
-				break;
-			}
-			type_cmd = parse_command(cmd[0]);
+    if (ac == 2)
+    {
+        fd = open(av[1], O_RDONLY);
+        if (fd == -1)
+        {
+            if (errno == EACCES)
+                exit(126);
+            if (errno == ENOENT)
+            {
+                _eputs(av[0]);
+                _eputs(": 0: Can't open ");
+                _eputs(av[1]);
+                _eputchar('\n');
+                _eputchar(BUF_FLUSH);
+                exit(127);
+            }
+            return (EXIT_FAILURE);
+        }
+        info->readfd = fd;
+    }
 
-			initializer(cmd, type_cmd);
-			free(cmd);
-		}
-		free(commands);
-	}
-	free(line);
-	return (status);
+    populate_env_list(info);
+    read_history(info);
+    hsh(info, av);
+
+    return (EXIT_SUCCESS);
 }

@@ -1,157 +1,16 @@
 #ifndef SHELL_H
 #define SHELL_H
 
-/*---MODE---*/
-void interactive_mode(char *progname);
-void non_interactive_mode(char *progname);
-
-/*---MACROS---*/
-extern char **environ;
-#define MAX_NUM 10
-#define MAX_LENGHT 256
-#define BUFFER_SIZE 1024
-#include <sys/stat.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <errno.h>
-
-/*---PROTOTYPES---*/
-char *read_stdin(void);
-char *read_stream(void);
-char **tokeniz(char *line);
-int excutcmd(char **cmd);
-void errors(char *s);
-char *_strdup(char *s);
-int _strlen(const char *s);
-int _strncmp(const char *str1, const char *str2, int n);
-char *_getenv(const char *name);
-void error(char *progname, int status, char **s, int running);
-void _itoa(int num, char *str);
-char *_strcat(char *dest, char *src);
-int end(char **cmd);
-char *_strcpy(char *dest, char *src);
-int env(char **cmd);
-char *_strtok(char *str, char *delim);
-int _getline(char **lineptr, size_t *n, FILE *stream);
-
-/*---STRUCTRES---*/
-/**
- * struct built - structure for builtins.
- * @name: name of the builtin.
- * @f: function prototype.
- */
-typedef struct built
-{
-	char *name;
-	int (*f)(char **);
-} built_in;
-#include <unistd.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
-#include <unistd.h>
-#include <dirent.h>
-#include <signal.h>
-
-/*constants*/
-#define EXTERNAL_CMD 1
-#define INTERNAL_CMD 2
-#define PATH_CMD 3
-#define INVALID_CMD -1
-
-#define min(x, y) (((x) < (y)) ? (x) : (y))
-
-/**
- *struct map - a struct that maps a command name to a function
- *
- *@command_name: name of the command
- *@func: the function that executes the command
- */
-
-typedef struct map
-{
-	char *command_name;
-	void (*func)(char **command);
-} function_map;
-
-extern char **environ;
-extern char *line;
-extern char **commands;
-extern char *shell_name;
-extern int status;
-
-/*helpers*/
-void print(char *, int);
-char **tokenizer(char *, char *);
-void remove_newline(char *);
-int _strlen(char *);
-void _strcpy(char *, char *);
-
-/*helpers2*/
-int _strcmp(char *, char *);
-char *_strcat(char *, char *);
-int _strspn(char *, char *);
-int _strcspn(char *, char *);
-char *_strchr(char *, char);
-
-/*helpers3*/
-char *_strtok_r(char *, char *, char **);
-int _atoi(char *);
-void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
-void ctrl_c_handler(int);
-void remove_comment(char *);
-
-/*utils*/
-int parse_command(char *);
-void execute_command(char **, int);
-char *check_path(char *);
-void (*get_func(char *))(char **);
-char *_getenv(char *);
-
-/*built_in*/
-void env(char **);
-void quit(char **);
-
-/*main*/
-extern void non_interactive(void);
-extern void initializer(char **current_command, int type_command);
-
-/*string_tools*/
-int _strcmp(char *, char *);
-char *_strcat(char *, char *);
-int _strspn(char *, char *);
-int _strcspn(char *, char *);
-char *_strchr(char *, char);
-/*string_tools2*/
-char *_strtok_r(char *, char *, char **);
-int _atoi(char *);
-void comment(char *);
-void _strcpy(char *, char *);
-int _strlen(char *);
-/*tools1*/
-int parse_cmd(char *);
-void execute_cmd(char **, int);
-char *check_path(char *);
-void (*get_func(char *))(char **);
-char *_getenv(char *);
-/*tools2*/
-char **tokenizer(char *, char *);
-void _print(char *, int);
-void remove_newline(char *);
-void *_realloc(void *, unsigned int, unsigned int);
-void ctrl_c_handler(int);
-/*tools3*/
-void env(char **);
-void quit(char **);
-/*interactive_mode*/
-extern void uninteractive(void);
-extern void initializer(char **, int);
+#include <limits.h>
+#include <fcntl.h>
+#include <errno.h>
 
 /* for read/write buffers */
 #define READ_BUF_SIZE 1024
